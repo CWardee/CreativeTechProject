@@ -13,16 +13,41 @@ public class Fish : MonoBehaviour
 
     public bool fishFound = false;
     public bool leaderFish = false;
+    public bool predatorNear = false;
     bool nearLeaderFish = false;
 
 
     public Vector3 destination;
+    Vector3 predatorDirection;
+    Rigidbody predatorRig;
 
     public int currentFlockNum;
 
+
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.name == "Fish" && !fishFound && leaderFish)
+        if(other.name == "Predator")
+        {
+
+            //Rigidbody predRig = other.gameObject.GetComponent<Rigidbody>();
+            predatorDirection = other.transform.position - transform.position;
+
+            predatorDirection = other.transform.position;
+
+            predatorDirection = transform.position - predatorDirection;
+
+            //transform.LookAt(2 * transform.position - other.attachedRigidbody.position);
+
+            predatorRig = other.gameObject.GetComponent<Rigidbody>();
+
+            transform.LookAt(2 * transform.position - predatorRig.position);
+            fishFound = false;
+            leaderFish = false;
+            predatorNear = true;
+        }
+
+        else if (other.name == "Fish" && !fishFound && leaderFish)
         {
             fishScript = other.GetComponent<Fish>();
 
@@ -37,7 +62,7 @@ public class Fish : MonoBehaviour
             }
         }
 
-        if (other.name == "Fish" && !fishFound && !leaderFish)
+        else if (other.name == "Fish" && !fishFound && !leaderFish)
         {
             fishScript = other.GetComponent<Fish>();
             if (fishScript.leaderFish == true)
@@ -49,7 +74,7 @@ public class Fish : MonoBehaviour
             }
         }
 
-        if (fishFound && other == fishScript)
+        else if (fishFound && other == fishScript)
         {
             nearLeaderFish = true;
         }
@@ -57,7 +82,14 @@ public class Fish : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (fishFound && other == fishScript)
+        if (other.name == "Predator")
+        {
+            predatorNear = false;
+            destination = this.gameObject.transform.position;
+        }
+
+
+        if (fishFound && other == fishScript && !predatorNear)
         {
             nearLeaderFish = false;
         }
@@ -91,10 +123,27 @@ public class Fish : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        counter += Time.deltaTime;
+
+        if(!predatorNear)
+        {
+            counter += Time.deltaTime;
+        }
+
+        if (predatorNear)
+        {
+            //transform.Rotate(predatorDirection);
+            transform.position += this.gameObject.transform.forward * Time.deltaTime * 5;
+            //rigidBody.velocity += this.gameObject.transform.forward * Time.deltaTime * 5;
 
 
-        if(counter > maxCounter)
+            //this.rigidBody.AddForce(transform.forward * 10);
+
+            //rigidBody.velocity = new Vector3(0, 10, 0);
+            //this.gameObject.transform.position = Vector3.Lerp(transform.position, predatorDirection, 1 * Time.deltaTime);
+        }
+
+
+        else if(counter > maxCounter && !predatorNear)
         {
             if (!fishFound)
             {
@@ -127,6 +176,9 @@ public class Fish : MonoBehaviour
             speed = Random.Range(1.0f, 3.0f);
         }
 
-        this.gameObject.transform.position = Vector3.Lerp(transform.position, destination, 1 * Time.deltaTime);
+        if(!predatorNear)
+        {
+            this.gameObject.transform.position = Vector3.Lerp(transform.position, destination, 1 * Time.deltaTime);
+        }
     }
 }
