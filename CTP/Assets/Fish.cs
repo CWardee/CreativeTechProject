@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Fish : MonoBehaviour
 {
+    public GameManager gameManager;
     Rigidbody rigidBody;
     public float counter = 0;
     float maxCounter;
@@ -11,11 +12,15 @@ public class Fish : MonoBehaviour
     GameObject leadFish;
     Fish fishScript;
 
+    public int health;
+    int maxHealth;
+
     public bool fishFound = false;
     public bool leaderFish = false;
     public bool predatorNear = false;
     bool nearLeaderFish = false;
 
+   
 
     public Vector3 destination;
     Vector3 predatorDirection;
@@ -23,6 +28,12 @@ public class Fish : MonoBehaviour
 
     public int currentFlockNum;
 
+
+    public int hunger;
+    public int hungerThreshhold;
+    public bool hungry = false;
+    bool nearFoodSource = false;
+    public bool currentlyEating = false;
 
 
     private void OnTriggerEnter(Collider other)
@@ -45,6 +56,17 @@ public class Fish : MonoBehaviour
             fishFound = false;
             leaderFish = false;
             predatorNear = true;
+        }
+
+        else if (other.name == "FoodSource" && hungry)
+        {
+            destination = other.transform.position;
+
+
+
+            nearFoodSource = true;
+            fishFound = false;
+            leaderFish = false;
         }
 
         else if (other.name == "Fish" && !fishFound && leaderFish)
@@ -88,6 +110,10 @@ public class Fish : MonoBehaviour
             destination = this.gameObject.transform.position;
         }
 
+        if (other.name == "FoodSource")
+        {
+            nearFoodSource = false;
+        }
 
         if (fishFound && other == fishScript && !predatorNear)
         {
@@ -107,6 +133,8 @@ public class Fish : MonoBehaviour
         this.gameObject.name = "Fish";
 
         int RandomLeaderFish = Random.Range(0, 5);
+        maxHealth = Random.Range(75, 125);
+        hungerThreshhold = Random.Range(300, 400);
 
         var cubeRenderer = this.gameObject.GetComponent<Renderer>();
         cubeRenderer.material.SetColor("_Color", Color.white);
@@ -123,23 +151,80 @@ public class Fish : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(fishScript == null)
+        {
+            fishFound = false;
+        }
 
-        if(!predatorNear)
+        if(health < 0)
+        {
+            if(!leaderFish)
+            {
+                gameManager.NumberOfFish--;
+                Destroy(gameObject);
+            }
+        }
+
+        if(!currentlyEating)
+        {
+            hunger++;
+        }
+
+        if (!predatorNear)
         {
             counter += Time.deltaTime;
         }
 
         if (predatorNear)
         {
-            //transform.Rotate(predatorDirection);
             transform.position += this.gameObject.transform.forward * Time.deltaTime * 5;
-            //rigidBody.velocity += this.gameObject.transform.forward * Time.deltaTime * 5;
+        }
+
+        else if (hunger > hungerThreshhold)
+        {
+            hungry = true;
+            GameObject foodSourceToFind = GameObject.Find("FoodSource");
+            destination = foodSourceToFind.transform.position;
 
 
-            //this.rigidBody.AddForce(transform.forward * 10);
+            float step = speed * Time.deltaTime; // calculate distance to move
+            transform.position = Vector3.MoveTowards(transform.position, destination, step);
 
-            //rigidBody.velocity = new Vector3(0, 10, 0);
-            //this.gameObject.transform.position = Vector3.Lerp(transform.position, predatorDirection, 1 * Time.deltaTime);
+            if (Vector3.Distance(transform.position, destination) < 0.001f)
+            {
+                // Swap the position of the cylinder.
+                destination *= -1.0f;
+            }
+
+            health--;
+        }
+
+
+        else if (currentlyEating)
+        {
+            hunger--;
+            if(health < 100)
+            {
+                health++;
+            }
+
+            if (hunger < 0)
+            {
+                currentlyEating = false;
+                hungry = false;
+            }
+        }
+
+        else if (nearFoodSource)
+        {
+            float step = speed * Time.deltaTime; // calculate distance to move
+            transform.position = Vector3.MoveTowards(transform.position, destination, step);
+
+            if (Vector3.Distance(transform.position, destination) < 0.001f)
+            {
+                // Swap the position of the cylinder.
+                destination *= -1.0f;
+            }
         }
 
 

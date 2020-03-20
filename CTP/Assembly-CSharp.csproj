@@ -64,6 +64,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Fish.cs" />
+    <Compile Include="Assets\Flock.cs" />
+    <Compile Include="Assets\FlockManager.cs" />
+    <Compile Include="Assets\FoodSource.cs" />
     <Compile Include="Assets\GameManager.cs" />
     <Compile Include="Assets\Predator.cs" />
     <Reference Include="Unity.Timeline.Editor">
@@ -98,6 +101,12 @@
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.AssetIdRemapUtility">
+      <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/Unity.ProBuilder.AssetIdRemapUtility.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.AddOns.Editor">
+      <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/Unity.ProBuilder.AddOns.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
