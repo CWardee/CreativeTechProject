@@ -63,17 +63,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Fish.cs" />
-    <Compile Include="Assets\Flock.cs" />
-    <Compile Include="Assets\FlockManager.cs" />
-    <Compile Include="Assets\FoodSource.cs" />
-    <Compile Include="Assets\GameManager.cs" />
-    <Compile Include="Assets\Predator.cs" />
+    <Compile Include="Assets\Scripts\Algae.cs" />
+    <Compile Include="Assets\Scripts\CameraControl.cs" />
+    <Compile Include="Assets\Scripts\Fish.cs" />
+    <Compile Include="Assets\Scripts\Flock.cs" />
+    <Compile Include="Assets\Scripts\FlockManager.cs" />
+    <Compile Include="Assets\Scripts\FoodSource.cs" />
+    <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\GroundPredator.cs" />
+    <Compile Include="Assets\Scripts\LargePredator.cs" />
+    <Compile Include="Assets\Scripts\ModuleMovemet.cs" />
+    <Compile Include="Assets\Scripts\Obstacle.cs" />
+    <Compile Include="Assets\Scripts\Predator.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
     <Reference Include="Unity.VSCode.Editor">
       <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/Unity.VSCode.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.ProBuilder.AssetIdRemapUtility">
+      <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/Unity.ProBuilder.AssetIdRemapUtility.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>
@@ -96,17 +105,14 @@
     <Reference Include="Unity.Postprocessing.Runtime">
       <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/Unity.Postprocessing.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.ProBuilder.AddOns.Editor">
+      <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/Unity.ProBuilder.AddOns.Editor.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.UI">
       <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/UnityEditor.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ProBuilder.AssetIdRemapUtility">
-      <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/Unity.ProBuilder.AssetIdRemapUtility.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.ProBuilder.AddOns.Editor">
-      <HintPath>C:/Users/chris/Documents/University/CreativeTechProject/CTP/Library/ScriptAssemblies/Unity.ProBuilder.AddOns.Editor.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AIModule">
       <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
