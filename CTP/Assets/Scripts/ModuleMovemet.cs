@@ -5,14 +5,15 @@ using UnityEngine;
 public class ModuleMovemet : MonoBehaviour
 {
     // State
-    [HideInInspector]
     public Vector3 position;
     [HideInInspector]
     public Vector3 forward;
 
+    ModuleMovemet fishScript;
 
     public Transform objectToFollow;
     public Transform objectToAvoid;
+
     private Quaternion lookRotation;
     private Vector3 direction;
     public FlockManager manager;
@@ -31,39 +32,105 @@ public class ModuleMovemet : MonoBehaviour
     int maxNumOfFish = 12;
     public float hunger = 0;
     public float maxHunger;
-    private float matingUrge = 0;
-    private float maxMatingUrge = 50;
+    public float matingUrge = 0;
+    public float maxMatingUrge = 50;
 
-    public bool female = false;
+    bool avoidingObject = false; 
+
+    public bool female;
     public bool mating = false;
 
     bool foodFound = false;
-    bool hide = false;
-
+    public bool hide = false;
+    public float age = 0;
     //check collider
     Collider[] objectsHit;
 
+    public GameObject foodToEat;
+
+    public float chance;
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.name == "Algae" && hungry)
+
+        ////if predator found
+        //if (other.name == "Predator" || other.name == "Obstacle")
+        //{
+        //    Debug.DrawLine(transform.position, other.gameObject.transform.position, Color.cyan);
+
+        //    distanceToAvoid = 5f;
+        //    speed = 9;
+        //    objectToAvoid = other.gameObject.transform;
+        //    direction = (objectToAvoid.position - transform.position + objectToAvoid.position);
+        //    //rotate to look at the player
+
+        //    //if predator found
+        //    if (other.name == "Fish")
+        //    {
+        //        Debug.DrawLine(transform.position, other.gameObject.transform.position, Color.cyan);
+
+        //        distanceToAvoid = 5f;
+        //        speed = 9;
+        //        objectToAvoid = other.gameObject.transform;
+        //        //direction = (objectToAvoid.position - transform.position + objectToAvoid.position);
+        //        //rotate to look at the player
+        //        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(other.transform.position + transform.position), 5 * Time.deltaTime);
+        //        //hide = true;
+        //    }
+        //}
+
+        // if algea found
+        if (other.name == "Algae" && other != this.gameObject && hungry)
         {
-            hunger = 0;
+            foodToEat = other.gameObject;
         }
 
-        if (other.name == "Fish")
+        //else
+        //{
+        //    foodToEat = null;
+        //}
+
+        //if (other.name == "Algae" && hungry)
+        //{
+        //    hunger = 0;
+        //}
+
+        if (other.name == "Fish" && !hungry)
         {
             numOfFish++;
+            fishScript = other.GetComponent<ModuleMovemet>();
+
+            if(fishScript.mating && mating && this.gameObject.transform.position.y < -radius + 25 && female == false)
+            {
+                if(female == false && fishScript.female == true)
+                {
+                    mating = false;
+                    hide = false;
+                    matingUrge = 0;
+
+                    Instantiate(this.gameObject, new Vector3(this.gameObject.transform.position.x + 1,
+                                                            this.gameObject.transform.position.y,
+                                                            this.gameObject.transform.position.z), Quaternion.Euler(Random.Range(-180f, 180f), Random.Range(-180f, 180f), Random.Range(-180f, 180f)));
+                }
+
+
+                else if (female == true && fishScript.female == false)
+                {
+                    mating = false;
+                    hide = false;
+                    matingUrge = 0;
+
+                    Instantiate(this.gameObject, new Vector3(this.gameObject.transform.position.x + 1,
+                                                            this.gameObject.transform.position.y,
+                                                            this.gameObject.transform.position.z), Quaternion.Euler(Random.Range(-180f, 180f), Random.Range(-180f, 180f), Random.Range(-180f, 180f)));
+                }
+
+            }
+
+
+
         }
 
-        if (mating)
-        {
-            Instantiate(this.gameObject, new Vector3(this.gameObject.transform.position.x,
-                                                    this.gameObject.transform.position.y,
-                                                    this.gameObject.transform.position.z), Quaternion.Euler(Random.Range(-180f, 180f), Random.Range(-180f, 180f), Random.Range(-180f, 180f)));
-
-            mating = false;
-            matingUrge = 0;
-        }
     }
 
     //check if fish exited
@@ -98,7 +165,7 @@ public class ModuleMovemet : MonoBehaviour
     private void avoidObject()
     {
         //Debug.DrawLine(transform.position, objectToAvoid.gameObject.transform.position, Color.blue);
-        direction = (objectToAvoid.position - transform.position + objectToAvoid.position).normalized;
+        direction = (objectToAvoid.position - transform.position + objectToAvoid.position);
         lookRotation = Quaternion.LookRotation(-direction);
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 15f);
 
@@ -143,7 +210,7 @@ public class ModuleMovemet : MonoBehaviour
         {
             //set radius
             radius = manager.SpawnRadius;
-            radiusx = Random.Range(-radius, radius);
+            float radiusx = Random.Range(-radius, radius);
             float radiusy = Random.Range(-radius, radius - 25);
             float radiusz = Random.Range(-radius, radius);
             position = new Vector3(radiusx, radiusy, radiusz);
@@ -153,8 +220,8 @@ public class ModuleMovemet : MonoBehaviour
         {
             //set radius
             radius = manager.SpawnRadius;
-            radiusx = Random.Range(-radius, radius);
-            float radiusy = Random.Range(-radius, -radius + 2);
+            float radiusx = Random.Range(-radius, radius);
+            float radiusy = Random.Range(-radius + 1, -radius);
             float radiusz = Random.Range(-radius, radius);
             position = new Vector3(radiusx, radiusy, radiusz);
         }
@@ -163,27 +230,52 @@ public class ModuleMovemet : MonoBehaviour
 
     void Start()
     {
+        hide = false;
         resetValues();
         GenerateRandomPos();
         this.gameObject.name = "Fish";
         speed = Random.Range(speed, speed * 2);
         turnTime = Random.Range(turnSpeed, turnSpeed * 2);
         hunger = Random.Range(-35, 35);
+        chance = Random.Range(-50, 50);
+        age = Random.Range(-50, 0);
+
+        if (chance < 0)
+        {
+            female = false;
+        }
+
+        else
+        {
+            female = true;
+        }
     }
+
 
 
     void Update()
     {
+        GenerateRandomPos();
+        //set age
+        age+= Time.deltaTime;
+
+        if (hide == true && this.gameObject.transform.position.y < -radius + 10)
+        {
+            hide = false;
+        }
         //get latest radius
         radius = manager.SpawnRadius;
+
         //go forward
         transform.position += this.gameObject.transform.forward * Time.deltaTime * speed;
+
         //set hunger
         hunger += Time.deltaTime;
 
         if (hunger > maxHunger)
         {
             hungry = true;
+            resetValues();
         }
 
         else
@@ -191,46 +283,96 @@ public class ModuleMovemet : MonoBehaviour
             hungry = false;
         }
 
-        //ensure fish is within bounds
-        if (gameObject.transform.position.x > radius || gameObject.transform.position.x < -radius ||
-            gameObject.transform.position.y > radius || gameObject.transform.position.y < -radius ||
-            gameObject.transform.position.z > radius || gameObject.transform.position.z < -radius)
+        //set mating urge
+        matingUrge += Time.deltaTime;
+
+        if (matingUrge > maxMatingUrge && age < 80)
         {
+            mating = true;
+            hide = true;
+        }
+
+        else
+        {
+            mating = false;
+        }
+
+        //ensure predator is within bounds
+        if (position.x > radius || position.x < -radius ||
+            position.y > radius || position.y < -radius ||
+            position.z > radius || position.z < -radius)
+        {
+            GenerateRandomPos();
+            resetValues();
             objectToFollow = null;
             objectToAvoid = null;
         }
 
-        objectsHit = Physics.OverlapSphere(transform.position, 10f);
+        objectsHit = Physics.OverlapSphere(transform.position, 6f);
         foreach (Collider hit in objectsHit)
         {
             //if predator found
             if (hit.name == "Predator" && hit != this.gameObject)
             {
+                GenerateRandomPos();
                 resetValues();
                 Debug.DrawLine(transform.position, hit.gameObject.transform.position, Color.red);
 
-                distanceToAvoid = 35f;
-                speed = 12;
+                distanceToAvoid = 10f;
+                speed = 7;
                 objectToAvoid = hit.gameObject.transform;
                 direction = (objectToAvoid.position - transform.position - objectToAvoid.position);
-                GenerateRandomPos();
-                hide = true;
+                //hide = true;
+
+            }
+
+
+            //if predator found
+            else if (hit.name == "Algea" && hit != this.gameObject && hungry)
+            {
+                foodFound = true;
+                foodToEat = hit.gameObject;
+
             }
         }
+        //objectsHit = Physics.OverlapSphere(transform.position, 0.2f);
+        //foreach (Collider hit in objectsHit)
+        //{
+        //    if (hit.name == "Fish" || hit.name == "LargePredator" && hit != this.gameObject)
+        //    {
+        //        Debug.DrawLine(transform.position, hit.gameObject.transform.position, Color.blue);
+
+        //        distanceToAvoid = 0.5f;
+        //        objectToAvoid = hit.gameObject.transform;
+        //        direction = (objectToAvoid.position - transform.position + objectToAvoid.position);
+        //        GenerateRandomPos();
+        //    }
+
+        //}
 
         objectsHit = Physics.OverlapSphere(transform.position, 1f);
         foreach (Collider hit in objectsHit)
         {
-            //avoid obstactle
-            if (hit.name == "Obstacle" && hit != this.gameObject || hit.name == "LargePredator" && hit != this.gameObject)
-            {
-                resetValues();
-                Debug.DrawLine(transform.position, hit.gameObject.transform.position, Color.green);
+            //if (hit.name == "Predator" && hit != this.gameObject)
+            //{
+            //    hide = true;
+            //}
 
-                distanceToAvoid = 3f;
+            //avoid obstactle
+            if (hit.name == "Obstacle"|| hit.name == "LargePredator" || hit.name == "Worm")
+            {
+                Debug.DrawLine(transform.position, hit.gameObject.transform.position, Color.blue);
+
+                distanceToAvoid = 5f;
                 objectToAvoid = hit.gameObject.transform;
                 direction = (objectToAvoid.position - transform.position - objectToAvoid.position);
                 GenerateRandomPos();
+                break;
+            }
+
+            else
+            {
+                avoidingObject = false;
             }
 
 
@@ -240,12 +382,12 @@ public class ModuleMovemet : MonoBehaviour
                 //if fish found
                 if (hit.name == "Fish" && hit != this.gameObject)
                 {
-                    resetValues();
-                    Debug.DrawLine(transform.position, hit.gameObject.transform.position, Color.green);
-
-
-                    objectToFollow = hit.gameObject.transform;
-                    direction = (objectToFollow.position - transform.position + objectToFollow.position).normalized;
+                    if(numOfFish < 8 && !hungry)
+                    {
+                        Debug.DrawLine(transform.position, hit.gameObject.transform.position, Color.green);
+                        objectToFollow = hit.gameObject.transform;
+                        direction = (objectToFollow.position - transform.position + objectToFollow.position).normalized;
+                    }
                 }
             }
 
@@ -253,33 +395,38 @@ public class ModuleMovemet : MonoBehaviour
             else if (hungry)
             {
                 // if algea found
-                if (hit.name == "Algae" && hit != this.gameObject && hungry)
+                if (hit.name == "Algea" && !foodFound)
                 {
+                    foodToEat = hit.gameObject;
                     resetValues();
-                    distanceToAvoid = 1f;
-                    Debug.DrawLine(transform.position, hit.gameObject.transform.position, Color.red);
-
-                    //objectToFollow = hit.gameObject.transform;
-                    //direction = (objectToFollow.position - transform.position + objectToFollow.position).normalized;
-                    foodFound = true;
+                    transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(hit.gameObject.transform.position - transform.position), 3 * Time.deltaTime);
+                    Debug.DrawLine(transform.position, hit.gameObject.transform.position, Color.magenta);
                     moveTowardsFood(hit.transform);
+                    foodFound = true;
+                    objectToFollow = hit.gameObject.transform;
+                    break;
                 }
 
-                else
+                else if (foodToEat == null)
                 {
                     foodFound = false;
                 }
             }
         }
 
+        if(foodToEat != null && hungry)
+        {
+            moveTowardsFood(foodToEat.transform);
+        }
+
         //if object found avoid object
-        if (objectToAvoid != null)
+        else if (objectToAvoid != null)
         {
             avoidObject();
         }
 
         //if object found move towards object
-        else if (objectToFollow != null)
+        else if (objectToFollow != null && !hungry)
         {
             moveTowards();
         }

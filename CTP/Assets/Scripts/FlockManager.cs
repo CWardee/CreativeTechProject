@@ -40,7 +40,7 @@ public class FlockManager : MonoBehaviour
         {
             Instantiate(AlgaeToSpawn, new Vector3(Random.Range(-SpawnRadius, SpawnRadius),
                                                     -SpawnRadius,
-                                                    Random.Range(-SpawnRadius, SpawnRadius)), Quaternion.Euler(0, 0, 0));
+                                                    Random.Range(-SpawnRadius, SpawnRadius)), Quaternion.Euler(Random.Range(-180f, 180f), Random.Range(-180f, 180f), Random.Range(-180f, 180f)));
         }
 
 
@@ -56,7 +56,7 @@ public class FlockManager : MonoBehaviour
         for (int i = 0; i < NumberOfWorm; i++)
         {
             Instantiate(WormToSpawn, new Vector3(Random.Range(-SpawnRadius, SpawnRadius),
-                                                    -SpawnRadius, Random.Range(-SpawnRadius, SpawnRadius)), 
+                                                    -SpawnRadius + 0.2f, Random.Range(-SpawnRadius, SpawnRadius)), 
                                                     Quaternion.Euler(90, 0, 0));
         }
     }

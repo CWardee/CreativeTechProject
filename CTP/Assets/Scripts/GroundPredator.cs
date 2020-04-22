@@ -11,10 +11,21 @@ public class GroundPredator : MonoBehaviour
     private Vector3 targetPoint;
     private Quaternion targetRotation;
 
+    private void OnTriggerEnter(Collider other)
+    {
+
+        //if predator found
+        if (other.name == "Fish")
+        {
+            Destroy(other.gameObject);
+
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        this.gameObject.name = "Worm";
     }
 
     // Update is called once per frame

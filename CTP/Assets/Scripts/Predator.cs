@@ -34,6 +34,8 @@ public class Predator : MonoBehaviour
     //check collider
     Collider[] objectsHit;
 
+    public float depthDivsion = 0;
+
     private Vector3 targetPoint;
     private Quaternion targetRotation;
 
@@ -74,8 +76,8 @@ public class Predator : MonoBehaviour
     {
         //set radius
         radius = manager.SpawnRadius;
-        radiusx = Random.Range(-radius, radius);
-        float radiusy = Random.Range(-radius + 15, radius);
+        float radiusx = Random.Range(-radius, radius);
+        float radiusy = Random.Range(-radius, radius - depthDivsion);
         float radiusz = Random.Range(-radius, radius);
         position = new Vector3(radiusx, radiusy, radiusz);
     }
@@ -100,10 +102,11 @@ public class Predator : MonoBehaviour
 
 
         //ensure predator is within bounds
-        if (gameObject.transform.position.x > radius || gameObject.transform.position.x < -radius ||
-            gameObject.transform.position.y > radius || gameObject.transform.position.y < -radius ||
-            gameObject.transform.position.z > radius || gameObject.transform.position.z < -radius)
+        if (position.x > radius || position.x < -radius ||
+            position.y > radius - depthDivsion || position.y < -radius ||
+            position.z > radius || position.z < -radius)
         {
+            GenerateRandomPos();
             objectToFollow = null;
             objectToAvoid = null;
         }
@@ -127,8 +130,8 @@ public class Predator : MonoBehaviour
         //go forward
         transform.position += this.gameObject.transform.forward * Time.deltaTime * speed;
 
-        //check what is around
-        objectsHit = Physics.OverlapSphere(transform.position, 4f);
+        ////check what is around
+        objectsHit = Physics.OverlapSphere(transform.position, 2f);
         foreach (Collider hit in objectsHit)
         {
             //avoid obstactle
@@ -144,27 +147,27 @@ public class Predator : MonoBehaviour
                 break;
             }
 
-            //avoid large predator
-            else if (hit.name == "LargePredator" && hit != this.gameObject)
-            {
-                resetValues();
-                Debug.DrawLine(transform.position, hit.gameObject.transform.position, Color.blue);
+            ////avoid large predator
+            //else if (hit.name == "LargePredator" && hit != this.gameObject)
+            //{
+            //    resetValues();
+            //    Debug.DrawLine(transform.position, hit.gameObject.transform.position, Color.blue);
 
-                distanceToAvoid = 3f;
-                objectToAvoid = hit.gameObject.transform;
-                direction = (objectToAvoid.position - transform.position - objectToAvoid.position);
-            }
+            //    distanceToAvoid = 5f;
+            //    objectToAvoid = hit.gameObject.transform;
+            //    direction = (objectToAvoid.position - transform.position - objectToAvoid.position);
+            //}
 
-            //if fish not found
-            else  if (!fishFound && hungry)
-            {
-                    if (hit.name == "Fish" && hit != this.gameObject && hungry)
-                    {
-                        targetFish = hit.gameObject;
-                        fishFound = true;
-                        break;
-                    }
-                }
+            ////if fish not found
+            //else if (!fishFound && hungry)
+            //{
+            //    if (hit.name == "Fish" && hit != this.gameObject && hungry)
+            //    {
+            //        targetFish = hit.gameObject;
+            //        fishFound = true;
+            //        break;
+            //    }
+            //}
         }
 
 
@@ -176,7 +179,7 @@ public class Predator : MonoBehaviour
 
             Debug.DrawLine(transform.position, targetFish.gameObject.transform.position, Color.green);
 
-            if (this.gameObject.transform.position.y > -radius + 15)
+            if (this.gameObject.transform.position.y > -radius)
             {
                 //rotate to look at the player
                 transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(targetFish.transform.position - transform.position), 3 * Time.deltaTime);
