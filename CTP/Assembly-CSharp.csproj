@@ -65,11 +65,13 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Algae.cs" />
     <Compile Include="Assets\Scripts\CameraControl.cs" />
+    <Compile Include="Assets\Scripts\DisableEnable.cs" />
     <Compile Include="Assets\Scripts\Fish.cs" />
     <Compile Include="Assets\Scripts\Flock.cs" />
     <Compile Include="Assets\Scripts\FlockManager.cs" />
     <Compile Include="Assets\Scripts\FoodSource.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
+    <Compile Include="Assets\Scripts\Graph.cs" />
     <Compile Include="Assets\Scripts\GroundPredator.cs" />
     <Compile Include="Assets\Scripts\LargePredator.cs" />
     <Compile Include="Assets\Scripts\ModuleMovemet.cs" />

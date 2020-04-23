@@ -135,7 +135,7 @@ public class Predator : MonoBehaviour
         foreach (Collider hit in objectsHit)
         {
             //avoid obstactle
-            if (hit.name == "Obstacle" && hit != this.gameObject)
+            if (hit.name == "Obstacle" && hit != this.gameObject || hit.name == "LargePradtor" && hit != this.gameObject)
             {
                 resetValues();
                 Debug.DrawLine(transform.position, hit.gameObject.transform.position, Color.blue);
@@ -158,16 +158,16 @@ public class Predator : MonoBehaviour
             //    direction = (objectToAvoid.position - transform.position - objectToAvoid.position);
             //}
 
-            ////if fish not found
-            //else if (!fishFound && hungry)
-            //{
-            //    if (hit.name == "Fish" && hit != this.gameObject && hungry)
-            //    {
-            //        targetFish = hit.gameObject;
-            //        fishFound = true;
-            //        break;
-            //    }
-            //}
+            //if fish not found
+            else if (!fishFound && hungry)
+            {
+                if (hit.name == "Fish" && hit != this.gameObject && hungry)
+                {
+                    targetFish = hit.gameObject;
+                    fishFound = true;
+                    break;
+                }
+            }
         }
 
 
